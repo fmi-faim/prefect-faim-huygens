@@ -10,6 +10,7 @@ env:
   DEPLOYMENT_NAME: default
   DEPLOYMENT_YAML: ./deconvolution.yaml
   PREFECT_API_KEY: ${{ secrets.PREFECT_FAIM_DEV_API_KEY }}
+  PREFECT_API_URL: ${{ secrets.PREFECT_API_URL }}
 
 jobs:
   build:
