@@ -27,10 +27,7 @@ jobs:
         run: pip install -r requirements.txt
 
       - name: Build prefect deployment
-        run: |
-          prefect cloud login -k $PREFECT_API_KEY -w fmi/faim-dev
-          prefect version
-          prefect deployment build $FLOW -n $DEPLOYMENT_NAME -t $TAG -ib $INFRA -sb $STORAGE -o $DEPLOYMENT_YAML -q $WORK_QUEUE --apply
+        run: prefect deployment build $FLOW -n $DEPLOYMENT_NAME -t $TAG -ib $INFRA -sb $STORAGE -o $DEPLOYMENT_YAML -q $WORK_QUEUE --apply
         env:
           TAG: huygens
           INFRA: process/prefect-faim-huygens
