@@ -9,7 +9,6 @@ env:
   FLOW: ./deconvolution.py:deconvolve
   DEPLOYMENT_NAME: default
   DEPLOYMENT_YAML: ./deconvolution.yaml
-  PREFECT_API_KEY: ${{ secrets.PREFECT_FAIM_DEV_API_KEY }}
 
 jobs:
   build:
@@ -26,7 +25,9 @@ jobs:
         run: pip install -r requirements.txt
 
       - name: Build prefect deployment
-        run: prefect deployment build $FLOW -n $DEPLOYMENT_NAME -t $TAG -ib $INFRA -sb $STORAGE -o $DEPLOYMENT_YAML -q $WORK_QUEUE --apply
+        run: |
+          prefect config set PREFECT_API_KEY=${{ secrets.PREFECT_FAIM_DEV_API_KEY }}
+          prefect deployment build $FLOW -n $DEPLOYMENT_NAME -t $TAG -ib $INFRA -sb $STORAGE -o $DEPLOYMENT_YAML -q $WORK_QUEUE --apply
         env:
           TAG: huygens
           INFRA: process/prefect-faim-huygens
