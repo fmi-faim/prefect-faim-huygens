@@ -27,7 +27,7 @@ jobs:
 
       - name: Build prefect deployment
         run: |
-          prefect cloud login -k $PREFECT_API_KEY -w fmi/faim-dev
+          prefect cloud workspace ls
           prefect deployment build $FLOW -n $DEPLOYMENT_NAME -t $TAG -ib $INFRA -sb $STORAGE -o $DEPLOYMENT_YAML -q $WORK_QUEUE --apply
         env:
           TAG: huygens
