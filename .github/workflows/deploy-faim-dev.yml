@@ -23,5 +23,8 @@ jobs:
       - name: Install requirements
         run: pip install -r requirements.txt
 
+      - name: Verify
+        run: prefect cloud workspace ls
+
       - name: Build prefect deployment
         run: python ./deconvolution.py
