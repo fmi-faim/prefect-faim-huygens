@@ -1,0 +1,3 @@
+prefect
+git+https://github.com/fmi-faim/faim-prefect
+faim-huygens

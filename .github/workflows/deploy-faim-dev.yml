@@ -1,0 +1,37 @@
+name: "faim-dev deployment"
+
+on:
+  push:
+    branches:
+      - "main"
+
+env:
+  FLOW: ./deconvolution.py:deconvolve
+  DEPLOYMENT_NAME: default
+  DEPLOYMENT_YAML: ./deconvolution.yaml
+  PREFECT_API_KEY: ${{ secrets.PREFECT_FAIM_DEV_API_KEY }}
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Set up Python 3.9
+        uses: actions/setup-python@v4
+        with:
+          python-version: 3.9
+
+      - name: Install requirements
+        run: pip install -r requirements.txt
+
+      - name: Build prefect deployment
+        run: prefect deployment build $FLOW -n $DEPLOYMENT_NAME -t $TAG -ib $INFRA -sb $STORAGE -o $DEPLOYMENT_YAML -q $WORK_QUEUE --apply
+        env:
+          TAG: huygens
+          INFRA: process/prefect-faim-huygens
+          STORAGE: github/prefect-faim-huygens
+          WORK_QUEUE: huygens
+
+      - name: Output success
+        run: echo "Successfully built deployment ${{ env.DEPLOYMENT_NAME }} :rocket:" >> $GITHUB_STEP_SUMMARY
