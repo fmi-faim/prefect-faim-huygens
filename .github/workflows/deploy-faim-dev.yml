@@ -6,7 +6,7 @@ on:
       - "main"
 
 env:
-  FLOW: ./deconvolution.py:deconvolve
+  FLOW: deconvolution.py:deconvolve
   DEPLOYMENT_NAME: default
   DEPLOYMENT_YAML: ./deconvolution.yaml
   PREFECT_API_KEY: ${{ secrets.PREFECT_FAIM_DEV_API_KEY }}
