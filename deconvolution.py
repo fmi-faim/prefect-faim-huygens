@@ -9,8 +9,11 @@ from faim_huygens.templates import write_template
 from faim_prefect.block.choices import Choices
 from prefect import flow, get_run_logger, task, unmapped
 from prefect.context import get_run_context
-from prefect.filesystems import LocalFileSystem
+from prefect.deployments import Deployment
+from prefect.filesystems import LocalFileSystem, GitHub
 from tempfile import TemporaryDirectory
+
+from prefect.infrastructure import Process
 
 Groups = Choices.load('fmi-groups').get()
 
@@ -60,11 +63,16 @@ def deconvolve(
             )
 
 
-if __name__ == "__main__":
-    deconvolve(
-        'user',
-        Groups.gmicro,
-        ['/path/to/image1.ome.tif',
-         '/path/to/image2.ome.tif',
-         ],
-        Microscopy(scale_z=0.1), Deconvolution())
+storage_block = GitHub.load('prefect-faim-huygens')
+infrastructure_block = Process.load('prefect-faim-huygens')
+
+deconvolve_deployment = Deployment.build_from_flow(
+    flow=deconvolve,
+    name="default",
+    tags=["huygens"],
+    storage=storage_block,
+    infrastructure=infrastructure_block,
+    work_queue_name="huygens"
+)
+
+deconvolve_deployment.apply()
