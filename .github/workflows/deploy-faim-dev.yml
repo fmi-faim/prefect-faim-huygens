@@ -5,10 +5,6 @@ on:
     branches:
       - "main"
 
-env:
-  PREFECT_API_KEY: ${{ secrets.PREFECT_FAIM_DEV_API_KEY }}
-  PREFECT_API_URL: ${{ secrets.PREFECT_API_URL }}
-
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -22,6 +18,11 @@ jobs:
 
       - name: Install requirements
         run: pip install -r requirements.txt
+
+      - name: Login to Prefect Cloud 2.0
+        run: |
+          prefect config set PREFECT_API_KEY=${{ secrets.PREFECT_FAIM_DEV_API_KEY }} 
+          prefect config set PREFECT_API_URL=${{ secrets.PREFECT_API_URL }}
 
       - name: Verify
         run: prefect cloud workspace ls
