@@ -24,8 +24,5 @@ jobs:
           prefect config set PREFECT_API_KEY=${{ secrets.PREFECT_FAIM_DEV_API_KEY }} 
           prefect config set PREFECT_API_URL=${{ secrets.PREFECT_API_URL }}
 
-      - name: Verify
-        run: prefect cloud workspace ls
-
       - name: Build prefect deployment
         run: python ./deconvolution.py
