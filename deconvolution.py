@@ -18,6 +18,7 @@ from prefect.infrastructure import Process
 Groups = Choices.load('fmi-groups').get()
 
 
+@task(tags=["hucore-license"])
 def deconvolve_file(
         hucore_path: str,
         input_file: str,
@@ -26,8 +27,12 @@ def deconvolve_file(
         microscope_params: Microscopy,
         deconvolution_params: Deconvolution,
 ):
-    config = create_config(input_files=[input_file], result_dir=output_dir, microscopy_params=microscope_params,
-                           deconvolution_params=deconvolution_params)
+    output_paths, config = create_config(
+        input_files=[input_file],
+        result_dir=output_dir,
+        microscopy_params=microscope_params,
+        deconvolution_params=deconvolution_params
+    )
     template_file = Path(temp_dir, Path(input_file).stem + '_template.hgsb')
     write_template(output_file=template_file, config=config)
     process = subprocess.run(
@@ -35,9 +40,13 @@ def deconvolve_file(
          str(template_file)])
     process.check_returncode()
     get_run_logger().info(f"Success. Deconvolution finished.")
+    return output_paths[0]
 
 
-@flow(name="Huygens Deconvolution")
+@flow(
+    name="Huygens Deconvolution",
+    result_storage="local-file-system/prefect-faim-huygens-storage"
+)
 def deconvolve(
         username: str,
         group: Groups,
